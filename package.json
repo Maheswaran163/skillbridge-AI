@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "description": "SkillBridge AI — Portal for Academia-Industry Collaboration for Skill Mapping, Internships and Placement",
-"scripts": {
-  "dev:backend": "cd backend && npm run dev",
-  "dev:frontend": "cd frontend && npm run dev",
-  "dev": "cd backend && npm run dev",
-  "build:backend": "npm install --prefix backend && npm run build --prefix backend",
-  "build:frontend": "npm install --prefix frontend && npm run build --prefix frontend",
-  "build": "npm install --prefix backend && npm run build --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
-  "seed": "cd backend && npm run seed"
-},
+  "scripts": {
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev": "npm run dev --prefix backend",
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "build:backend": "npm install --prefix backend && npm run build --prefix backend",
+    "build:frontend": "npm install --prefix frontend && npm run build --prefix frontend",
+    "build": "npm install --prefix backend && npm run build --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "seed": "npm run seed --prefix backend"
+  },
   "keywords": [
     "sih",
     "skill-mapping",

@@ -31,15 +31,15 @@ export const config = {
       Boolean(process.env.FIREBASE_PROJECT_ID) &&
       Boolean(process.env.FIREBASE_CLIENT_EMAIL) &&
       Boolean(process.env.FIREBASE_PRIVATE_KEY) &&
-      !process.env.FIREBASE_CLIENT_EMAIL.includes('demo')
+      !process.env.FIREBASE_CLIENT_EMAIL?.includes('demo')
     );
   },
 
   isGeminiConfigured: (): boolean => {
-    return Boolean(process.env.GEMINI_API_KEY) && process.env.GEMINI_API_KEY.length > 10;
+    return Boolean(process.env.GEMINI_API_KEY) && (process.env.GEMINI_API_KEY?.length ?? 0) > 10;
   },
 
   isPineconeConfigured: (): boolean => {
-    return Boolean(process.env.PINECONE_API_KEY) && process.env.PINECONE_API_KEY.length > 10;
+    return Boolean(process.env.PINECONE_API_KEY) && (process.env.PINECONE_API_KEY?.length ?? 0) > 10;
   },
 };

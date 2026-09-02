@@ -242,10 +242,13 @@ router.post('/ai/resume/analyze', (req, res) => {
   Experience: Full Stack Engineering Intern at TechCorp India (3 Months).
   `;
 
-  const { jobId } = req.body;
+  const { jobId, resumeText } = req.body;
   const job = jobId ? inMemoryStore.jobs.get(jobId) : undefined;
+  const textToAnalyze = (resumeText && typeof resumeText === 'string' && resumeText.trim().length > 10)
+    ? resumeText
+    : sampleResumeText;
 
-  const result = ResumeAnalyzer.analyzeResumeText(sampleResumeText, job);
+  const result = ResumeAnalyzer.analyzeResumeText(textToAnalyze, job);
   res.json(result);
 });
 

@@ -28,6 +28,16 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Root Endpoint
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    message: '🚀 SkillBridge AI Backend API Server is Active!',
+    healthCheck: '/api/health',
+    apiDocumentation: '/api',
+  });
+});
+
 // Health Check
 app.get('/api/health', (req, res) => {
   res.json({

@@ -144,14 +144,14 @@ export default function InterviewSimulatorPage() {
               <div className="flex items-center justify-between border-b border-gray-800 pb-2">
                 <span className="text-xs font-bold text-gray-200">AI Evaluation Feedback</span>
                 <span className="text-sm font-black text-emerald-400">
-                  {evaluations[session.questions[currentIdx].questionId].score}/100
+                  {evaluations[session.questions[currentIdx]?.questionId]?.score}/100
                 </span>
               </div>
 
               <div className="space-y-1.5 text-xs text-gray-300">
-                <p><strong>Technical Accuracy:</strong> {evaluations[session.questions[currentIdx].questionId].technicalAccuracy}</p>
-                <p><strong>Communication:</strong> {evaluations[session.questions[currentIdx].questionId].communicationQuality}</p>
-                <p className="text-blue-400"><strong>Improvement Tip:</strong> {evaluations[session.questions[currentIdx].questionId].suggestedBetterAnswer}</p>
+                <p><strong>Technical Accuracy:</strong> {evaluations[session.questions[currentIdx]?.questionId]?.technicalAccuracy}</p>
+                <p><strong>Communication:</strong> {evaluations[session.questions[currentIdx]?.questionId]?.communicationQuality}</p>
+                <p className="text-blue-400"><strong>Improvement Tip:</strong> {evaluations[session.questions[currentIdx]?.questionId]?.suggestedBetterAnswer}</p>
               </div>
 
               {currentIdx < session.questions.length - 1 && (

@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: skillbridge-ai-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        value: skillbridge_ai_super_secret_jwt_key_2026

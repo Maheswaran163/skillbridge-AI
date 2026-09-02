@@ -1,0 +1,28 @@
+{
+  "name": "skillbridge-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SkillBridge AI — Portal for Academia-Industry Collaboration for Skill Mapping, Internships and Placement",
+  "scripts": {
+    "dev:backend": "cmd /c \"cd backend && npm run dev\"",
+    "dev:frontend": "cmd /c \"cd frontend && npm run dev\"",
+    "dev": "cmd /c \"cd backend && npm run dev\"",
+    "build:backend": "cmd /c \"cd backend && npm run build\"",
+    "build:frontend": "cmd /c \"cd frontend && npm run build\"",
+    "build": "cmd /c \"cd backend && npm run build && cd ../frontend && npm run build\"",
+    "seed": "cmd /c \"cd backend && npm run seed\""
+  },
+  "keywords": [
+    "sih",
+    "skill-mapping",
+    "academia-industry",
+    "internships",
+    "placement",
+    "rag",
+    "gemini",
+    "pinecone",
+    "firebase"
+  ],
+  "author": "SkillBridge AI Team",
+  "license": "MIT"
+}

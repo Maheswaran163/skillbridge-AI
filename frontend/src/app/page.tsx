@@ -65,11 +65,11 @@ export default function HomePage() {
       {/* Role Switcher Demo Gateway */}
       <section className="space-y-6">
         <div className="text-center max-w-xl mx-auto">
-          <h2 className="text-2xl font-bold text-white">Experience All 5 Role Dashboards</h2>
+          <h2 className="text-2xl font-bold text-white">Experience All 6 Role Dashboards</h2>
           <p className="text-xs text-gray-400 mt-1">Select a role below to immediately log in and explore its dedicated workflow.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <button
             onClick={() => switchDemoUser('std_aarav')}
             className="p-6 rounded-2xl glass-card text-left group border border-gray-800 hover:border-blue-500/50"
@@ -83,6 +83,22 @@ export default function HomePage() {
               <li className="flex items-center gap-1.5">✓ Skill Gap & Roadmap</li>
               <li className="flex items-center gap-1.5">✓ ATS Resume Analyzer</li>
               <li className="flex items-center gap-1.5">✓ AI Interview Practice</li>
+            </ul>
+          </button>
+
+          <button
+            onClick={() => switchDemoUser('staff_priya')}
+            className="p-6 rounded-2xl glass-card text-left group border border-gray-800 hover:border-indigo-500/50"
+          >
+            <div className="w-12 h-12 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-white mb-1">Staff / TPO Portal</h3>
+            <p className="text-xs text-gray-400 mb-4">Priya Nair • Placement Officer</p>
+            <ul className="space-y-1.5 text-[11px] text-gray-300">
+              <li className="flex items-center gap-1.5">✓ Job Post Moderation</li>
+              <li className="flex items-center gap-1.5">✓ Student Badge Verification</li>
+              <li className="flex items-center gap-1.5">✓ Offer & Placement Tracker</li>
             </ul>
           </button>
 

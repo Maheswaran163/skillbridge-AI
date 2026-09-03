@@ -15,6 +15,7 @@ frontend/out/
 
 # TypeScript build output
 backend/dist/
+shared/**/*.js
 
 # Logs
 *.log

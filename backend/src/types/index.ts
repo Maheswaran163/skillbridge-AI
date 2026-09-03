@@ -1,5 +1,6 @@
 export type UserRole =
   | 'student'
+  | 'staff'
   | 'industry'
   | 'academician'
   | 'institution_admin'
@@ -195,6 +196,36 @@ export interface LearningRoadmapPhase {
   }[];
 }
 
+export interface StaffProfile extends UserProfile {
+  role: 'staff';
+  department: string;
+  designation: string;
+  phone?: string;
+  verificationPrivileges: boolean;
+}
+
+export interface StaffAnnouncement {
+  id: string;
+  institutionId: string;
+  title: string;
+  content: string;
+  authorName: string;
+  createdAt: string;
+  targetAudience: 'all' | 'students' | 'final_year';
+}
+
+export interface PlacementRecord {
+  id: string;
+  studentId: string;
+  studentName: string;
+  companyName: string;
+  roleTitle: string;
+  packageLpa: number;
+  offerType: 'full_time' | 'internship_ppo';
+  status: 'offered' | 'accepted' | 'joined';
+  date: string;
+}
+
 export interface JobOpportunity {
   id: string;
   industryId: string;
@@ -202,6 +233,7 @@ export interface JobOpportunity {
   companyLogo?: string;
   title: string;
   type: 'job' | 'internship';
+  status?: 'pending' | 'approved' | 'rejected';
   description: string;
   location: string;
   workMode: 'remote' | 'on_site' | 'hybrid';

@@ -24,6 +24,7 @@ router.post('/auth/login', (req, res) => {
 
   if (!user && email) {
     user = Array.from(inMemoryStore.students.values()).find((u) => u.email === email) ||
+           Array.from(inMemoryStore.staff.values()).find((u) => u.email === email) ||
            Array.from(inMemoryStore.industries.values()).find((u) => u.email === email) ||
            Array.from(inMemoryStore.academicians.values()).find((u) => u.email === email) ||
            Array.from(inMemoryStore.institutionAdmins.values()).find((u) => u.email === email);
@@ -31,7 +32,17 @@ router.post('/auth/login', (req, res) => {
 
   if (!user) {
     // Default fallback demo user depending on role
-    user = inMemoryStore.students.get('std_aarav')!;
+    if (role === 'staff') {
+      user = inMemoryStore.staff.get('staff_priya')!;
+    } else if (role === 'industry') {
+      user = inMemoryStore.industries.get('ind_techcorp')!;
+    } else if (role === 'academician') {
+      user = inMemoryStore.academicians.get('acad_raman')!;
+    } else if (role === 'institution_admin' || role === 'super_admin') {
+      user = inMemoryStore.institutionAdmins.get('admin_deshmukh')!;
+    } else {
+      user = inMemoryStore.students.get('std_aarav')!;
+    }
   }
 
   const token = jwt.sign(
@@ -74,6 +85,110 @@ router.put('/students/profile', authenticateToken, (req: AuthenticatedRequest, r
 });
 
 // ==========================================
+// 2B. STAFF PORTAL APIs
+// ==========================================
+
+router.get('/staff/profile', authenticateToken, (req: AuthenticatedRequest, res: Response) => {
+  const staff = inMemoryStore.staff.get(req.user!.uid) || inMemoryStore.staff.get('staff_priya');
+  res.json(staff);
+});
+
+router.get('/staff/moderation/jobs', authenticateToken, requireRole('staff', 'institution_admin', 'super_admin'), (req: AuthenticatedRequest, res: Response) => {
+  const allJobs = Array.from(inMemoryStore.jobs.values());
+  res.json(allJobs);
+});
+
+router.post('/staff/moderation/jobs/:id/approve', authenticateToken, requireRole('staff', 'institution_admin', 'super_admin'), (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  const job = inMemoryStore.jobs.get(id);
+  if (!job) {
+    res.status(404).json({ error: 'Job not found' });
+    return;
+  }
+  job.status = 'approved';
+  inMemoryStore.jobs.set(id, job);
+  res.json({ message: 'Job approved successfully', job });
+});
+
+router.post('/staff/moderation/jobs/:id/reject', authenticateToken, requireRole('staff', 'institution_admin', 'super_admin'), (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  const job = inMemoryStore.jobs.get(id);
+  if (!job) {
+    res.status(404).json({ error: 'Job not found' });
+    return;
+  }
+  job.status = 'rejected';
+  inMemoryStore.jobs.set(id, job);
+  res.json({ message: 'Job rejected', job });
+});
+
+router.post('/staff/verify-student', authenticateToken, requireRole('staff', 'institution_admin', 'super_admin'), (req: AuthenticatedRequest, res: Response) => {
+  const { studentId, projectIds, certIds, newSkills } = req.body;
+  const student = inMemoryStore.students.get(studentId || 'std_aarav');
+  if (!student) {
+    res.status(404).json({ error: 'Student not found' });
+    return;
+  }
+
+  if (projectIds && Array.isArray(projectIds)) {
+    student.projects.forEach((p) => {
+      if (projectIds.includes(p.id)) p.verified = true;
+    });
+  }
+
+  if (certIds && Array.isArray(certIds)) {
+    student.certifications.forEach((c) => {
+      if (certIds.includes(c.id)) c.verified = true;
+    });
+  }
+
+  if (newSkills && Array.isArray(newSkills)) {
+    student.skills.forEach((s) => {
+      if (newSkills.includes(s.skillId)) {
+        s.verificationLevel = 'industry_verified';
+        s.score = Math.max(s.score, 88);
+      }
+    });
+  }
+
+  student.readinessScore = Math.min(98, student.readinessScore + 5);
+  student.employabilityScore = Math.min(98, student.employabilityScore + 4);
+  inMemoryStore.students.set(student.uid, student);
+
+  res.json({ message: 'Student profile verified', student });
+});
+
+router.get('/staff/placements', authenticateToken, (req: AuthenticatedRequest, res: Response) => {
+  res.json(Array.from(inMemoryStore.placements.values()));
+});
+
+router.post('/staff/placements', authenticateToken, requireRole('staff', 'institution_admin', 'super_admin'), (req: AuthenticatedRequest, res: Response) => {
+  const record = {
+    id: `plc_${Date.now()}`,
+    date: new Date().toISOString().split('T')[0],
+    ...req.body,
+  };
+  inMemoryStore.placements.set(record.id, record);
+  res.status(201).json(record);
+});
+
+router.get('/staff/announcements', authenticateToken, (req: AuthenticatedRequest, res: Response) => {
+  res.json(Array.from(inMemoryStore.announcements.values()));
+});
+
+router.post('/staff/announcements', authenticateToken, requireRole('staff', 'institution_admin', 'super_admin'), (req: AuthenticatedRequest, res: Response) => {
+  const announcement = {
+    id: `ann_${Date.now()}`,
+    institutionId: req.user!.institutionId || 'inst_iitb',
+    authorName: req.user!.name || 'Placement Cell Officer',
+    createdAt: new Date().toISOString(),
+    ...req.body,
+  };
+  inMemoryStore.announcements.set(announcement.id, announcement);
+  res.status(201).json(announcement);
+});
+
+// ==========================================
 // 3. INDUSTRY PORTAL APIs
 // ==========================================
 
@@ -98,12 +213,17 @@ router.get('/industries/candidates', authenticateToken, (req: AuthenticatedReque
 // ==========================================
 
 router.get('/jobs', (req, res) => {
-  const jobs = Array.from(inMemoryStore.jobs.values()).filter((j) => j.type === 'job');
+  // Students only see approved jobs; staff/admin see all
+  const all = Array.from(inMemoryStore.jobs.values()).filter((j) => j.type === 'job');
+  const showAll = req.query.includePending === 'true';
+  const jobs = showAll ? all : all.filter((j) => !j.status || j.status === 'approved');
   res.json(jobs);
 });
 
 router.get('/internships', (req, res) => {
-  const internships = Array.from(inMemoryStore.jobs.values()).filter((j) => j.type === 'internship');
+  const all = Array.from(inMemoryStore.jobs.values()).filter((j) => j.type === 'internship');
+  const showAll = req.query.includePending === 'true';
+  const internships = showAll ? all : all.filter((j) => !j.status || j.status === 'approved');
   res.json(internships);
 });
 
@@ -112,6 +232,7 @@ router.post('/jobs', authenticateToken, requireRole('industry', 'super_admin'), 
     id: `job_${Date.now()}`,
     industryId: req.user!.uid,
     companyName: req.user!.name || 'Tech Company',
+    status: 'pending' as const, // Posts default to pending moderation
     createdAt: new Date().toISOString(),
     ...req.body,
   };

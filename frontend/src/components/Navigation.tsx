@@ -26,6 +26,7 @@ export const Navigation: React.FC = () => {
 
   const demoAccounts = [
     { label: 'Student (Aarav Sharma)', uid: 'std_aarav', role: 'student', icon: GraduationCap },
+    { label: 'Staff (Priya Nair - TPO)', uid: 'staff_priya', role: 'staff', icon: UserCheck },
     { label: 'Industry (TechCorp India)', uid: 'ind_techcorp', role: 'industry', icon: Briefcase },
     { label: 'Academician (Dr. K. S. Raman)', uid: 'acad_raman', role: 'academician', icon: BookOpen },
     { label: 'Institution Admin (IIT Bombay)', uid: 'admin_deshmukh', role: 'institution_admin', icon: Building2 },
@@ -39,6 +40,10 @@ export const Navigation: React.FC = () => {
     { href: '/student/resume', label: 'Resume AI Analyzer', icon: FileCheck2 },
     { href: '/student/portfolio', label: 'Digital Portfolio', icon: Award },
     { href: '/student/interview', label: 'AI Interview Simulator', icon: Video },
+  ];
+
+  const staffLinks = [
+    { href: '/staff', label: 'Staff TPO Dashboard', icon: UserCheck },
   ];
 
   const industryLinks = [
@@ -57,6 +62,8 @@ export const Navigation: React.FC = () => {
   const activeLinks =
     role === 'student'
       ? studentLinks
+      : role === 'staff'
+      ? staffLinks
       : role === 'industry'
       ? industryLinks
       : role === 'academician'

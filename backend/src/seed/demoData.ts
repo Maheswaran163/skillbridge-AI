@@ -1,5 +1,6 @@
 import {
   StudentProfile,
+  StaffProfile,
   IndustryProfile,
   AcademicianProfile,
   InstitutionAdminProfile,
@@ -8,6 +9,8 @@ import {
   JobOpportunity,
   JobApplication,
   RAGDocument,
+  StaffAnnouncement,
+  PlacementRecord,
 } from '../types';
 
 export const DEMO_INSTITUTIONS = [
@@ -494,6 +497,70 @@ export const DEMO_ADMINS: InstitutionAdminProfile[] = [
   },
 ];
 
+export const DEMO_STAFF: StaffProfile[] = [
+  {
+    uid: 'staff_priya',
+    email: 'priya.nair@iitb.ac.in',
+    name: 'Priya Nair',
+    role: 'staff',
+    department: 'Training & Placement Cell',
+    designation: 'Senior Placement Officer',
+    institutionId: 'inst_iitb',
+    institutionName: 'IIT Bombay',
+    phone: '+91 98200 11223',
+    verificationPrivileges: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
+    createdAt: '2024-03-15T00:00:00Z',
+    updatedAt: '2026-08-15T00:00:00Z',
+  },
+];
+
+export const DEMO_ANNOUNCEMENTS: StaffAnnouncement[] = [
+  {
+    id: 'ann_1',
+    institutionId: 'inst_iitb',
+    title: 'Day 1 Campus Placement Registration Deadline',
+    content: 'All B.Tech/M.Tech final year students must complete their SkillBridge AI profile verification by October 10th to participate in Day 1 tech company interviews.',
+    authorName: 'Priya Nair (TPO)',
+    createdAt: '2026-08-25T10:00:00Z',
+    targetAudience: 'final_year',
+  },
+  {
+    id: 'ann_2',
+    institutionId: 'inst_iitb',
+    title: 'Upcoming TechCorp Pre-Placement Talk',
+    content: 'TechCorp India will be holding a live session on Next.js 15 and Cloud Microservices on September 15th at 5 PM in the Main Auditorium.',
+    authorName: 'Priya Nair (TPO)',
+    createdAt: '2026-09-01T09:00:00Z',
+    targetAudience: 'all',
+  },
+];
+
+export const DEMO_PLACEMENTS: PlacementRecord[] = [
+  {
+    id: 'plc_1',
+    studentId: 'std_aarav',
+    studentName: 'Aarav Sharma',
+    companyName: 'TechCorp India',
+    roleTitle: 'Full Stack Engineer',
+    packageLpa: 16.5,
+    offerType: 'full_time',
+    status: 'accepted',
+    date: '2026-08-30',
+  },
+  {
+    id: 'plc_2',
+    studentId: 'std_ananya',
+    studentName: 'Ananya Verma',
+    companyName: 'Innovate AI Labs',
+    roleTitle: 'RAG Research Engineer',
+    packageLpa: 21.0,
+    offerType: 'full_time',
+    status: 'offered',
+    date: '2026-09-01',
+  },
+];
+
 export const DEMO_JOBS: JobOpportunity[] = [
   {
     id: 'job_1',
@@ -501,6 +568,7 @@ export const DEMO_JOBS: JobOpportunity[] = [
     companyName: 'TechCorp India',
     title: 'Full Stack Software Engineer',
     type: 'job',
+    status: 'approved',
     description: 'We are looking for a high-energy Full Stack Engineer proficient in Next.js, React, Node.js, and SQL to build responsive web portals for global enterprise clients.',
     location: 'Bengaluru, KA (Hybrid)',
     workMode: 'hybrid',
@@ -520,6 +588,7 @@ export const DEMO_JOBS: JobOpportunity[] = [
     companyName: 'Innovate AI Labs',
     title: 'AI / GenAI Research Associate',
     type: 'job',
+    status: 'approved',
     description: 'Join our research team to build cutting-edge RAG engines, vector database pipelines, and agentic workflows using Python, PyTorch, Pinecone, and Gemini API.',
     location: 'Hyderabad, TS (On-Site)',
     workMode: 'on_site',
@@ -539,6 +608,7 @@ export const DEMO_JOBS: JobOpportunity[] = [
     companyName: 'CloudScale Solutions',
     title: 'Associate Cloud & DevOps Engineer',
     type: 'job',
+    status: 'approved',
     description: 'Responsible for infrastructure as code, Kubernetes deployment automation, and AWS cloud security hardening.',
     location: 'Remote',
     workMode: 'remote',
@@ -551,6 +621,26 @@ export const DEMO_JOBS: JobOpportunity[] = [
     deadline: '2026-10-15',
     createdAt: '2026-08-10T00:00:00Z',
   },
+  {
+    id: 'job_pending_1',
+    industryId: 'ind_techcorp',
+    companyName: 'TechCorp India',
+    title: 'Cybersecurity & SOC Analyst',
+    type: 'job',
+    status: 'pending',
+    description: 'Pending Moderation: Enterprise network threat monitoring, vulnerability scanning, and OWASP compliance auditing.',
+    location: 'Mumbai, MH',
+    workMode: 'on_site',
+    experienceLevel: '0-1 Years',
+    salaryOrStipend: '₹13 - 16 LPA',
+    requiredSkills: ['Cybersecurity', 'Problem Solving', 'Communication'],
+    preferredSkills: ['Python', 'System Design'],
+    degreeRequired: 'B.Tech in CS/IT',
+    graduationYearEligible: [2026],
+    deadline: '2026-11-30',
+    createdAt: '2026-09-02T10:00:00Z',
+    institutionId: 'inst_iitb',
+  },
 ];
 
 export const DEMO_INTERNSHIPS: JobOpportunity[] = [
@@ -560,6 +650,7 @@ export const DEMO_INTERNSHIPS: JobOpportunity[] = [
     companyName: 'TechCorp India',
     title: 'Frontend Development Intern (React / Next.js)',
     type: 'internship',
+    status: 'approved',
     description: '6-month stipend internship focusing on building rich UI components, Tailwind styling, and API integrations for enterprise analytics dashboards.',
     location: 'Bengaluru / Remote',
     workMode: 'hybrid',
@@ -580,6 +671,7 @@ export const DEMO_INTERNSHIPS: JobOpportunity[] = [
     companyName: 'Innovate AI Labs',
     title: 'RAG & Data Science Intern',
     type: 'internship',
+    status: 'approved',
     description: 'Hands-on role building data ingestion pipelines, vector indexing with Pinecone, and evaluation benchmarks for LLM apps.',
     location: 'Hyderabad, TS',
     workMode: 'on_site',

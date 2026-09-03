@@ -4,12 +4,24 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserRole, UserProfile } from '@/types';
 import { fetchApi } from '@/lib/apiClient';
 
+interface RegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  institutionName?: string;
+  department?: string;
+  careerGoal?: string;
+  companyName?: string;
+}
+
 interface AuthContextType {
   user: UserProfile | null;
   role: UserRole;
   token: string | null;
   isLoading: boolean;
   switchDemoUser: (demoUid: string) => Promise<void>;
+  registerUser: (payload: RegisterPayload) => Promise<UserProfile>;
   logout: () => void;
 }
 
@@ -19,6 +31,7 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   isLoading: true,
   switchDemoUser: async () => {},
+  registerUser: async () => ({} as UserProfile),
   logout: () => {},
 });
 
@@ -29,7 +42,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Initial auto-login with default demo student
     const savedToken = localStorage.getItem('skillbridge_token');
     if (savedToken) {
       setToken(savedToken);
@@ -41,11 +53,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         })
         .catch(() => {
-          switchDemoUser('std_aarav');
+          localStorage.removeItem('skillbridge_token');
         })
         .finally(() => setIsLoading(false));
     } else {
-      switchDemoUser('std_aarav').finally(() => setIsLoading(false));
+      setIsLoading(false);
     }
   }, []);
 
@@ -56,7 +68,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         method: 'POST',
         body: JSON.stringify({ demoUid }),
       });
-
       localStorage.setItem('skillbridge_token', data.token);
       setToken(data.token);
       setUser(data.user);
@@ -68,14 +79,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const registerUser = async (payload: RegisterPayload): Promise<UserProfile> => {
+    setIsLoading(true);
+    try {
+      const data = await fetchApi<{ token: string; user: UserProfile }>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      localStorage.setItem('skillbridge_token', data.token);
+      setToken(data.token);
+      setUser(data.user);
+      setRole(data.user.role);
+      return data.user;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('skillbridge_token');
     setUser(null);
     setToken(null);
+    setRole('student');
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, token, isLoading, switchDemoUser, logout }}>
+    <AuthContext.Provider value={{ user, role, token, isLoading, switchDemoUser, registerUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

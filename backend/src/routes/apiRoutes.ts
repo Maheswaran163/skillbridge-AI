@@ -16,25 +16,139 @@ const router = Router();
 // 1. AUTHENTICATION & DEMO LOGIN ROUTER
 // ==========================================
 
+router.post('/auth/register', (req, res) => {
+  const { name, email, password, role, institutionName, department, careerGoal, companyName } = req.body;
+  const uid = `usr_${Date.now()}`;
+  const now = new Date().toISOString();
+
+  let user: any;
+
+  if (role === 'industry') {
+    user = {
+      uid,
+      email: email || 'user@company.com',
+      name: name || 'Registered Industry Partner',
+      role: 'industry',
+      companyName: companyName || name || 'Innovate Enterprise',
+      industrySector: 'Software & Technology',
+      website: 'https://company.example.com',
+      companySize: '50-200 Employees',
+      headquarters: 'Bengaluru, India',
+      description: 'Registered Industry Partner on SkillBridge AI.',
+      verified: true,
+      institutionId: 'inst_iitb',
+      createdAt: now,
+      updatedAt: now,
+    };
+    inMemoryStore.industries.set(uid, user);
+  } else if (role === 'academician') {
+    user = {
+      uid,
+      email: email || 'faculty@iitb.ac.in',
+      name: name || 'Dr. Faculty Member',
+      role: 'academician',
+      department: department || 'Computer Science & Engineering',
+      designation: 'Associate Professor',
+      expertise: ['Machine Learning', 'Data Structures', 'Cloud Systems'],
+      researchAreas: ['AI Skill Mapping'],
+      consultancyAvailable: true,
+      institutionId: 'inst_iitb',
+      institutionName: institutionName || 'IIT Bombay',
+      createdAt: now,
+      updatedAt: now,
+    };
+    inMemoryStore.academicians.set(uid, user);
+  } else if (role === 'institution_admin') {
+    user = {
+      uid,
+      email: email || 'admin@iitb.ac.in',
+      name: name || 'Placement Director',
+      role: 'institution_admin',
+      institutionId: 'inst_iitb',
+      institutionName: institutionName || 'IIT Bombay',
+      code: 'INST',
+      location: 'Mumbai, MH',
+      website: 'https://iitb.ac.in',
+      totalStudents: 12500,
+      createdAt: now,
+      updatedAt: now,
+    };
+    inMemoryStore.institutionAdmins.set(uid, user);
+  } else {
+    // Default Student Registration
+    user = {
+      uid,
+      email: email || 'student@iitb.ac.in',
+      name: name || 'New Student Candidate',
+      role: 'student',
+      department: department || 'Computer Science & Engineering',
+      degree: 'B.Tech',
+      graduationYear: 2026,
+      careerGoal: careerGoal || 'Full Stack Developer',
+      institutionId: 'inst_iitb',
+      institutionName: institutionName || 'IIT Bombay',
+      readinessScore: 88,
+      employabilityScore: 90,
+      technicalScore: 85,
+      softSkillScore: 88,
+      skills: DEMO_SKILLS.slice(0, 5).map((sk) => ({
+        skillId: sk.id,
+        skillName: sk.name,
+        category: sk.category,
+        proficiencyLevel: 'intermediate' as const,
+        verificationLevel: 'assessment_verified' as const,
+        score: 85,
+      })),
+      projects: [
+        {
+          id: `proj_${Date.now()}`,
+          title: 'SkillBridge AI Capstone Platform',
+          description: 'Next.js 15 & Node.js AI-driven skill mapping and candidate matching app.',
+          role: 'Full Stack Lead',
+          techStack: ['React', 'Next.js', 'Node.js', 'SQL'],
+          verified: true,
+        },
+      ],
+      certifications: [],
+      internships: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+    inMemoryStore.students.set(uid, user);
+  }
+
+  const token = jwt.sign(
+    {
+      uid: user.uid,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      institutionId: user.institutionId,
+    },
+    config.jwtSecret,
+    { expiresIn: '7d' }
+  );
+
+  res.status(201).json({
+    token,
+    user,
+  });
+});
+
 router.post('/auth/login', (req, res) => {
   const { email, role, demoUid } = req.body;
 
-  // Quick Demo Fast-Login handling
   let user = demoUid ? inMemoryStore.getUserByUid(demoUid) : null;
 
   if (!user && email) {
     user = Array.from(inMemoryStore.students.values()).find((u) => u.email === email) ||
-           Array.from(inMemoryStore.staff.values()).find((u) => u.email === email) ||
            Array.from(inMemoryStore.industries.values()).find((u) => u.email === email) ||
            Array.from(inMemoryStore.academicians.values()).find((u) => u.email === email) ||
            Array.from(inMemoryStore.institutionAdmins.values()).find((u) => u.email === email);
   }
 
   if (!user) {
-    // Default fallback demo user depending on role
-    if (role === 'staff') {
-      user = inMemoryStore.staff.get('staff_priya')!;
-    } else if (role === 'industry') {
+    if (role === 'industry') {
       user = inMemoryStore.industries.get('ind_techcorp')!;
     } else if (role === 'academician') {
       user = inMemoryStore.academicians.get('acad_raman')!;

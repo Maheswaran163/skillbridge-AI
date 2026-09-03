@@ -1,6 +1,5 @@
 export type UserRole =
   | 'student'
-  | 'staff'
   | 'industry'
   | 'academician'
   | 'institution_admin'

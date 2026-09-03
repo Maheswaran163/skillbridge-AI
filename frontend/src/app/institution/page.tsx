@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { fetchApi } from '@/lib/apiClient';
 import { InstitutionAnalytics } from '@/types';
-import { Building2, Users, Award, TrendingUp, Sparkles, AlertCircle } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { Building2, Users, Award, TrendingUp, Sparkles, AlertCircle, BarChart3 } from 'lucide-react';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+} from 'recharts';
 
 export default function InstitutionAdminPage() {
   const [analytics, setAnalytics] = useState<InstitutionAnalytics | null>(null);
@@ -19,83 +21,99 @@ export default function InstitutionAdminPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  if (loading || !analytics) return <div className="p-8 text-center text-gray-400">Loading Institution Placement Analytics & Recharts...</div>;
+  if (loading || !analytics) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center gap-3 text-orange-500 text-sm">
+          <div className="w-5 h-5 border-2 border-orange-300 border-t-orange-500 rounded-full animate-spin" />
+          <span className="text-slate-600">Loading placement analytics...</span>
+        </div>
+      </div>
+    );
+  }
+
+  const metrics = [
+    { label: 'Total Students', value: analytics.totalStudents, color: 'text-slate-900', icon: Users },
+    { label: 'Placement Ready', value: analytics.placementReadyStudents, color: 'text-emerald-600', icon: Award },
+    { label: 'Internships', value: analytics.internshipCount, color: 'text-blue-600', icon: BarChart3 },
+    { label: 'Placed', value: analytics.placementCount, color: 'text-orange-600', icon: Building2 },
+    { label: 'Avg Skill Score', value: `${analytics.averageSkillScore}%`, color: 'text-amber-600', icon: TrendingUp },
+    { label: 'Employability', value: `${analytics.averageEmployabilityScore}%`, color: 'text-purple-600', icon: Sparkles },
+  ];
 
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="glass-panel p-8 rounded-3xl border border-gray-800 space-y-2">
-        <div className="flex items-center gap-3">
-          <Building2 className="w-8 h-8 text-amber-400" />
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-orange-100 border border-orange-200 flex items-center justify-center flex-shrink-0">
+            <Building2 className="w-7 h-7 text-orange-600" />
+          </div>
           <div>
-            <h1 className="text-2xl font-extrabold text-white">{analytics.institutionName} Placement & Skill Analytics</h1>
-            <p className="text-xs text-gray-400">Real-time institutional oversight on student employability & skill gaps.</p>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 border border-orange-200">
+                Institution Admin
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+              {analytics.institutionName} — Placement &amp; Skill Analytics
+            </h1>
+            <p className="text-xs text-slate-500">Real-time institutional oversight on student employability &amp; skill gaps.</p>
           </div>
         </div>
       </div>
 
-      {/* 6 Key Institution Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-xs">
-        <div className="glass-card p-4 rounded-2xl border border-gray-800 space-y-1">
-          <span className="text-gray-400">Total Students</span>
-          <p className="text-2xl font-black text-white">{analytics.totalStudents}</p>
-        </div>
-        <div className="glass-card p-4 rounded-2xl border border-gray-800 space-y-1">
-          <span className="text-gray-400">Placement Ready</span>
-          <p className="text-2xl font-black text-emerald-400">{analytics.placementReadyStudents}</p>
-        </div>
-        <div className="glass-card p-4 rounded-2xl border border-gray-800 space-y-1">
-          <span className="text-gray-400">Internship Count</span>
-          <p className="text-2xl font-black text-blue-400">{analytics.internshipCount}</p>
-        </div>
-        <div className="glass-card p-4 rounded-2xl border border-gray-800 space-y-1">
-          <span className="text-gray-400">Placements</span>
-          <p className="text-2xl font-black text-purple-400">{analytics.placementCount}</p>
-        </div>
-        <div className="glass-card p-4 rounded-2xl border border-gray-800 space-y-1">
-          <span className="text-gray-400">Avg Skill Score</span>
-          <p className="text-2xl font-black text-amber-400">{analytics.averageSkillScore}%</p>
-        </div>
-        <div className="glass-card p-4 rounded-2xl border border-gray-800 space-y-1">
-          <span className="text-gray-400">Employability</span>
-          <p className="text-2xl font-black text-emerald-400">{analytics.averageEmployabilityScore}%</p>
-        </div>
+      {/* 6-Metric Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        {metrics.map(({ label, value, color, icon: Icon }) => (
+          <div key={label} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-orange-200 transition-all text-center space-y-1">
+            <Icon className={`w-5 h-5 mx-auto ${color}`} />
+            <p className={`text-2xl font-black ${color}`}>{value}</p>
+            <span className="text-[10px] text-slate-500">{label}</span>
+          </div>
+        ))}
       </div>
 
-      {/* Recharts Analytics Section */}
+      {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Top Skill Gaps Chart */}
-        <div className="glass-panel p-6 rounded-3xl border border-gray-800 space-y-4">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-400" /> Institutional Skill Gap Analysis (%)
+        {/* Skill Gaps Chart */}
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-500" />
+            Institutional Skill Gap Analysis (%)
           </h3>
-
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={analytics.topSkillGaps}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                <XAxis dataKey="skillName" stroke="#9ca3af" fontSize={10} />
-                <YAxis stroke="#9ca3af" fontSize={10} />
-                <Tooltip contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '8px' }} />
-                <Bar dataKey="gapPercentage" fill="#ef4444" radius={[6, 6, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="skillName" stroke="#94a3b8" fontSize={10} />
+                <YAxis stroke="#94a3b8" fontSize={10} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#fff', borderColor: '#e2e8f0', borderRadius: '12px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
+                  labelStyle={{ color: '#0f172a', fontWeight: 700 }}
+                />
+                <Bar dataKey="gapPercentage" fill="#f97316" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Industry Skill Demand Trends */}
-        <div className="glass-panel p-6 rounded-3xl border border-gray-800 space-y-4">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-emerald-400" /> Industry Skill Demand Trends
+        {/* Industry Demand Chart */}
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-emerald-500" />
+            Industry Skill Demand Trends
           </h3>
-
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={analytics.industryDemandTrends}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                <XAxis dataKey="skillName" stroke="#9ca3af" fontSize={10} />
-                <YAxis stroke="#9ca3af" fontSize={10} />
-                <Tooltip contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '8px' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="skillName" stroke="#94a3b8" fontSize={10} />
+                <YAxis stroke="#94a3b8" fontSize={10} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#fff', borderColor: '#e2e8f0', borderRadius: '12px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
+                  labelStyle={{ color: '#0f172a', fontWeight: 700 }}
+                />
                 <Bar dataKey="demandScore" fill="#3b82f6" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -104,15 +122,15 @@ export default function InstitutionAdminPage() {
       </div>
 
       {/* AI Curriculum Recommendations */}
-      <div className="glass-panel p-6 rounded-3xl border border-gray-800 space-y-3">
-        <h3 className="text-sm font-bold text-white flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-amber-400" /> AI Institutional Curriculum Action Plan
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+        <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-orange-500" />
+          AI Institutional Curriculum Action Plan
         </h3>
-
-        <div className="space-y-2 text-xs text-gray-300">
+        <div className="space-y-2.5">
           {analytics.aiCurriculumRecommendations.map((rec, idx) => (
-            <div key={idx} className="bg-gray-900/60 p-3 rounded-xl border border-gray-800 flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded-full bg-blue-600/20 text-blue-400 font-bold flex items-center justify-center shrink-0">
+            <div key={idx} className="bg-orange-50 border border-orange-100 p-3.5 rounded-xl flex items-start gap-3 text-xs text-slate-700">
+              <span className="w-6 h-6 rounded-full bg-orange-500 text-white font-bold flex items-center justify-center shrink-0 text-[10px]">
                 {idx + 1}
               </span>
               <p className="leading-relaxed">{rec}</p>
